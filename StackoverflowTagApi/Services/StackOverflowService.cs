@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using StackoverflowTagApi.Interfaces;
 using StackoverflowTagApi.Models;
 using System.Diagnostics;
 using System.IO.Compression;
@@ -10,7 +11,7 @@ using System.Text.Json.Serialization;
 
 namespace StackoverflowTagApi.Services
 {
-    public class StackOverflowService
+    public class StackOverflowService : IStackOverflowService
     {
         private readonly HttpClient _client;
         private readonly ILogger<StackOverflowService> _logger;
@@ -22,7 +23,7 @@ namespace StackoverflowTagApi.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<List<Tag>> GetTagsAsync()
+        public async Task<IEnumerable<Tag>> GetTagsAsync()
         {
             try
             {
