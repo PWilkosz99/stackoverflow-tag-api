@@ -23,7 +23,7 @@ namespace StackoverflowTagApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Tag>>> GetTags(string sortBy = "name", bool ascending = true)
+        public async Task<ActionResult<List<Tag>>> GetTags(string sortBy = "name", bool ascending = true, int page = 1, int pageSize = 10)
         {
             if(await _tagRepository.GetTotalTagCountAsync() < 1000)
             {
@@ -34,7 +34,9 @@ namespace StackoverflowTagApi.Controllers
 
             var tags = await _tagRepository.GetAllSortedAsync(sortBy, ascending);
 
-            return tags.ToList();
+            var paginatedTags = tags.Skip((page - 1) * pageSize).Take(pageSize);
+
+            return paginatedTags.ToList();
         }
 
         [HttpPost("refresh")]
