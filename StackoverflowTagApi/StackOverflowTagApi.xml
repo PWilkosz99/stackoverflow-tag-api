@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>StackoverflowTagApi</name>
+    </assembly>
+    <members>
+        <member name="T:StackoverflowTagApi.Controllers.TagsController">
+            <summary>
+            Controller for managing tags.
+            </summary>
+        </member>
+        <member name="M:StackoverflowTagApi.Controllers.TagsController.GetTags(System.String,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            Get a list of tags.
+            </summary>
+            <param name="sortBy">Sort field.</param>
+            <param name="ascending">Sort direction.</param>
+            <param name="page">Page number.</param>
+            <param name="pageSize">Page size.</param>
+            <returns>A list of tags.</returns>
+        </member>
+        <member name="M:StackoverflowTagApi.Controllers.TagsController.RefreshTags">
+            <summary>
+            Refreshes the list of tags by fetching them from the Stack Overflow service.
+            </summary>
+            <remarks>
+            This action clears the existing tags in the repository and retrieves the latest tags from the Stack Overflow service.
+            </remarks>
+            <returns>An IActionResult indicating the result of the operation.</returns>
+        </member>
+        <member name="T:StackoverflowTagApi.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:StackoverflowTagApi.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:StackoverflowTagApi.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:StackoverflowTagApi.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:StackoverflowTagApi.Migrations.Add_PercentageShare">
+            <inheritdoc />
+        </member>
+        <member name="M:StackoverflowTagApi.Migrations.Add_PercentageShare.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:StackoverflowTagApi.Migrations.Add_PercentageShare.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:StackoverflowTagApi.Migrations.Add_PercentageShare.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

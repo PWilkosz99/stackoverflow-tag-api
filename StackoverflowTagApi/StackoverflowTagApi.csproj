@@ -7,6 +7,9 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <UserSecretsId>42979c09-ab8b-47f0-8a65-abafde54bc30</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<NoWarn>$(NoWarn);1591</NoWarn>
+	<DocumentationFile>StackOverflowTagApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
