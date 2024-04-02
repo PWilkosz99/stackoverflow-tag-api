@@ -23,18 +23,17 @@ namespace StackoverflowTagApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Tag>>> GetTags()
+        public async Task<ActionResult<List<Tag>>> GetTags(string sortBy = "name", bool ascending = true)
         {
-            List<Tag> tags = (await _stackOverflowService.GetTagsAsync()).ToList();
-
-            if (tags.Count < 1000)
+            if(await _tagRepository.GetTotalTagCountAsync() < 1000)
             {
-                var additionalTags = await _stackOverflowService.GetTagsAsync();
-                _tagRepository.AddRange(additionalTags);
-                tags.AddRange(additionalTags);
+                var savedTags = await _stackOverflowService.GetTagsAsync();
+                _tagRepository.AddRange(savedTags);
             }
 
-            return tags.Take(1000).ToList();
+            var tags = await _tagRepository.GetAllSortedAsync(sortBy, ascending);
+
+            return tags.ToList();
         }
     }
 }
