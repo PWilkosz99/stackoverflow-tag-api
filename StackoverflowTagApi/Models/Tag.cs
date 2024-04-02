@@ -21,5 +21,6 @@ namespace StackoverflowTagApi.Models
         public bool IsModeratorOnly { get; set; }
         [JsonPropertyName("has_synonyms")]
         public bool has_synonyms { get; set; }
+        public double? PercentageShare { get; set; }
     }
 }

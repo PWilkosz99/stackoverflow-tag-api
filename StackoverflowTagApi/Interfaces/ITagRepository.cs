@@ -10,7 +10,9 @@ namespace StackoverflowTagApi.Interfaces
         bool Add(Tag tag);
         bool AddRange(IEnumerable<Tag> tag);
         bool Update(Tag tag);
+        Task<bool> UpdatePercentageShareAsync();
         bool Delete(string name);
+        bool DeleteAll();
         bool Save();
     }
 }

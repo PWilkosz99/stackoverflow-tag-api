@@ -29,11 +29,22 @@ namespace StackoverflowTagApi.Controllers
             {
                 var savedTags = await _stackOverflowService.GetTagsAsync();
                 _tagRepository.AddRange(savedTags);
+                await _tagRepository.UpdatePercentageShareAsync();
             }
 
             var tags = await _tagRepository.GetAllSortedAsync(sortBy, ascending);
 
             return tags.ToList();
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshTags()
+        {
+            var savedTags = await _stackOverflowService.GetTagsAsync();
+            _tagRepository.DeleteAll();
+            _tagRepository.AddRange(savedTags);
+            await _tagRepository.UpdatePercentageShareAsync();
+            return Ok();
         }
     }
 }

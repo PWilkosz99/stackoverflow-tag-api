@@ -32,6 +32,12 @@ namespace StackoverflowTagApi.Repository
             return Save();
         }
 
+        public bool DeleteAll()
+        {
+            _context.Tags.RemoveRange(_context.Tags);
+            return Save();
+        }
+
         public async Task<IEnumerable<Tag>> GetAll()
         {
             return await _context.Tags.ToListAsync();
@@ -54,6 +60,9 @@ namespace StackoverflowTagApi.Repository
                 case "count":
                     query = ascending ? query.OrderBy(tag => tag.Count) : query.OrderByDescending(tag => tag.Count);
                     break;
+                case "percentage":
+                    query = ascending ? query.OrderBy(tag => tag.PercentageShare) : query.OrderByDescending(tag => tag.PercentageShare);
+                    break;
                 default:
                     //TODO: LogWarning($"Invalid sorting option '{sortBy}'. Defaulting to sorting by name.");
                     query = query.OrderBy(tag => tag.Name);
@@ -72,6 +81,20 @@ namespace StackoverflowTagApi.Repository
         {
             _context.Tags.Update(tag);
             return Save();
+        }
+
+        public async Task<bool> UpdatePercentageShareAsync()
+        {
+            var tags = await _context.Tags.ToListAsync();
+
+            int totalTagCount = tags.Sum(tag => tag.Count);
+
+            foreach (var tag in tags)
+            {
+                tag.PercentageShare = (double)tag.Count / totalTagCount * 100;
+            }
+
+            return await _context.SaveChangesAsync() >= 0;
         }
     }
 }
