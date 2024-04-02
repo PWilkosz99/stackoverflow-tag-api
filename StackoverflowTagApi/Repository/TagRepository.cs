@@ -2,16 +2,19 @@
 using StackoverflowTagApi.Models;
 using Microsoft.EntityFrameworkCore;
 using StackoverflowTagApi.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace StackoverflowTagApi.Repository
 {
     public class TagRepository : ITagRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<TagRepository> _logger;
 
-        public TagRepository(ApplicationDbContext context)
+        public TagRepository(ApplicationDbContext context, ILogger<TagRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public bool Add(Tag tag)
@@ -64,7 +67,7 @@ namespace StackoverflowTagApi.Repository
                     query = ascending ? query.OrderBy(tag => tag.PercentageShare) : query.OrderByDescending(tag => tag.PercentageShare);
                     break;
                 default:
-                    //TODO: LogWarning($"Invalid sorting option '{sortBy}'. Defaulting to sorting by name.");
+                    _logger.LogWarning($"Invalid sorting option '{sortBy}'. Defaulting to sorting by name.");
                     query = query.OrderBy(tag => tag.Name);
                     break;
             }
@@ -85,16 +88,28 @@ namespace StackoverflowTagApi.Repository
 
         public async Task<bool> UpdatePercentageShareAsync()
         {
-            var tags = await _context.Tags.ToListAsync();
-
-            int totalTagCount = tags.Sum(tag => tag.Count);
-
-            foreach (var tag in tags)
+            try
             {
-                tag.PercentageShare = (double)tag.Count / totalTagCount * 100;
-            }
+                var tags = await _context.Tags.ToListAsync();
 
-            return await _context.SaveChangesAsync() >= 0;
+                int totalTagCount = tags.Sum(tag => tag.Count);
+
+                foreach (var tag in tags)
+                {
+                    tag.PercentageShare = (double)tag.Count / totalTagCount * 100;
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Percentage share updated successfully.");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while updating percentage share: {ex.Message}");
+                return false;
+            }
         }
     }
 }

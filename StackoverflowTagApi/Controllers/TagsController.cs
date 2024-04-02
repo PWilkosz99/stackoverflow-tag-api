@@ -78,7 +78,14 @@ namespace StackoverflowTagApi.Controllers
                 var savedTags = await _stackOverflowService.GetTagsAsync();
                 _tagRepository.DeleteAll();
                 _tagRepository.AddRange(savedTags);
-                await _tagRepository.UpdatePercentageShareAsync();
+                var updateSuccess = await _tagRepository.UpdatePercentageShareAsync();
+
+                if (!updateSuccess)
+                {
+                    _logger.LogError("Failed to update percentage share.");
+                    return StatusCode(500, "Failed to update percentage share.");
+                }
+
                 return Ok();
             }
             catch (Exception ex)
