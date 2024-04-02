@@ -1,0 +1,6 @@
+@StackoverflowTagApi_HostAddress = http://localhost:5278
+
+GET {{StackoverflowTagApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
