@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 using StackoverflowTagApi.Interfaces;
 using StackoverflowTagApi.Models;
 using System.Diagnostics;
@@ -25,38 +26,48 @@ namespace StackoverflowTagApi.Services
 
         public async Task<IEnumerable<Tag>> GetTagsAsync()
         {
+            const int pageSize = 100;
+            const int maxTags = 1000;
+
+            var tags = new List<Tag>();
+
             try
             {
-                var response = await _client.GetAsync("tags?order=desc&sort=popular&site=stackoverflow");
-
-                if (response.IsSuccessStatusCode)
+                for (int page = 1; tags.Count < maxTags; page++)
                 {
-                    using (Stream contentStream = await response.Content.ReadAsStreamAsync())
-                    using (var decompressedStream = new GZipStream(contentStream, CompressionMode.Decompress))
-                    using (var streamReader = new StreamReader(decompressedStream))
+                    var response = await _client.GetAsync($"tags?order=desc&sort=popular&site=stackoverflow&page={page}&pagesize={pageSize}");
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        var content = await streamReader.ReadToEndAsync();
-
-                        if (string.IsNullOrEmpty(content))
+                        using (Stream contentStream = await response.Content.ReadAsStreamAsync())
+                        using (var decompressedStream = new GZipStream(contentStream, CompressionMode.Decompress))
+                        using (var streamReader = new StreamReader(decompressedStream))
                         {
-                            _logger.LogInformation("Response content is empty. Returning an empty list of tags.");
-                            return new List<Tag>();
-                        }
+                            var content = await streamReader.ReadToEndAsync();
 
-                        var result = JsonSerializer.Deserialize<TagResponse>(content);
-                        return result.Items;
+                            if (string.IsNullOrEmpty(content))
+                            {
+                                _logger.LogInformation("Response content is empty. Returning the retrieved tags.");
+                                break;
+                            }
+
+                            var result = JsonSerializer.Deserialize<TagResponse>(content);
+                            tags.AddRange(result.Items);
+
+                            if (tags.Count >= maxTags)
+                                break;
+                        }
                     }
-                }
-                else if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    _logger.LogWarning($"HTTP request returned status code 404: {response.ReasonPhrase}");
-                    throw new HttpRequestException($"Failed to fetch tags: {response.StatusCode}");
-                }
-                else
-                {
-                    _logger.LogError($"HTTP request failed with status code {response.StatusCode}: {response.ReasonPhrase}");
-                    response.EnsureSuccessStatusCode();
-                    return new List<Tag>();
+                    else if (response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        _logger.LogWarning($"HTTP request returned status code 404: {response.ReasonPhrase}");
+                        throw new HttpRequestException($"Failed to fetch tags: {response.StatusCode}");
+                    }
+                    else
+                    {
+                        _logger.LogError($"HTTP request failed with status code {response.StatusCode}: {response.ReasonPhrase}");
+                        response.EnsureSuccessStatusCode();
+                    }
                 }
             }
             catch (HttpRequestException ex)
@@ -74,6 +85,8 @@ namespace StackoverflowTagApi.Services
                 _logger.LogError($"An unexpected error occurred: {ex.Message}");
                 throw;
             }
+
+            return tags.Take(maxTags).ToList();
         }
     }
 }
