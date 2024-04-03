@@ -27,13 +27,13 @@ namespace StackoverflowTagApi.Services
         public async Task<IEnumerable<Tag>> GetTagsAsync()
         {
             const int pageSize = 100;
-            const int maxTags = 1000;
+            const int minTags = 1000;
 
             var tags = new List<Tag>();
 
             try
             {
-                for (int page = 1; tags.Count < maxTags; page++)
+                for (int page = 1; tags.Count < minTags; page++)
                 {
                     var response = await _client.GetAsync($"tags?order=desc&sort=popular&site=stackoverflow&page={page}&pagesize={pageSize}");
 
@@ -54,7 +54,7 @@ namespace StackoverflowTagApi.Services
                             var result = JsonSerializer.Deserialize<TagResponse>(content);
                             tags.AddRange(result.Items);
 
-                            if (tags.Count >= maxTags)
+                            if (tags.Count >= minTags)
                                 break;
                         }
                     }
@@ -86,7 +86,7 @@ namespace StackoverflowTagApi.Services
                 throw;
             }
 
-            return tags.Take(maxTags).ToList();
+            return tags.ToList();
         }
     }
 }

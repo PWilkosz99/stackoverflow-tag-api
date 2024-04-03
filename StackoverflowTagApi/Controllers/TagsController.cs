@@ -14,11 +14,11 @@ namespace StackoverflowTagApi.Controllers
     [Route("[controller]")]
     public class TagsController : Controller
     {
-        private readonly StackOverflowService _stackOverflowService;
+        private readonly IStackOverflowService _stackOverflowService;
         private readonly ITagRepository _tagRepository;
         private readonly ILogger<StackOverflowService> _logger;
 
-        public TagsController(StackOverflowService stackOverflowService, ITagRepository tagRepository, ILogger<StackOverflowService> logger)
+        public TagsController(IStackOverflowService stackOverflowService, ITagRepository tagRepository, ILogger<StackOverflowService> logger)
         {
             _stackOverflowService = stackOverflowService;
             _tagRepository = tagRepository;
@@ -52,7 +52,7 @@ namespace StackoverflowTagApi.Controllers
 
                 var paginatedTags = tags.Skip((page - 1) * pageSize).Take(pageSize);
 
-                return paginatedTags.ToList();
+                return Ok(paginatedTags.ToList());
             }
             catch (Exception ex)
             {
