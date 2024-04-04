@@ -16,6 +16,9 @@ WORKDIR "/src/StackoverflowTagApi"
 RUN dotnet build "./StackoverflowTagApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
+ENV PATH="$PATH:/root/.dotnet/tools"
+RUN dotnet tool install --global dotnet-ef
+RUN dotnet ef database update
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./StackoverflowTagApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
